@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>House Price Predictor</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+<div class="card">
+
+    <div class="logo">🏡</div>
+
+    <h2>House Price Predictor</h2>
+
+    <div class="subtitle">
+        AI-Powered Real Estate Valuation
+    </div>
+
+    <form method="POST">
+
+        <div class="form-group">
+            <label>Area (sqft)</label>
+            <div class="input-box">
+                <i class="fa-solid fa-ruler-combined"></i>
+                <input type="number" name="Area" placeholder="Enter area" required>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>Bedrooms</label>
+            <div class="input-box">
+                <i class="fa-solid fa-bed"></i>
+                <input type="number" name="Bedrooms" placeholder="Bedrooms" required>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>Bathrooms</label>
+            <div class="input-box">
+                <i class="fa-solid fa-bath"></i>
+                <input type="number" name="Bathrooms" placeholder="Bathrooms" required>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>Property Age</label>
+            <div class="input-box">
+                <i class="fa-solid fa-calendar"></i>
+                <input type="number" name="Age" placeholder="Age in years" required>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>Location</label>
+            <div class="input-box">
+                <i class="fa-solid fa-location-dot"></i>
+                <select name="Location" required>
+                    {% for loc in locations %}
+                    <option value="{{ loc }}">{{ loc }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>Property Type</label>
+            <div class="input-box">
+                <i class="fa-solid fa-house"></i>
+                <select name="Property_Type" required>
+                    {% for p in property_types %}
+                    <option value="{{ p }}">{{ p }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+
+        <button id="predictBtn" type="submit">
+            Predict Property Value
+        </button>
+
+        <div class="loader" id="loader"></div>
+
+    </form>
+
+    {% if prediction %}
+
+    <div class="result">
+
+        <h3>Estimated Property Value</h3>
+
+        <div id="priceCounter" class="price">
+            {{ prediction }}
+        </div>
+
+        <div class="category">
+            {{ category }}
+        </div>
+
+        <div class="confidence">
+            Prediction Confidence: {{ confidence }}%
+        </div>
+
+    </div>
+
+    <div class="chart-container">
+        <canvas id="priceChart"></canvas>
+    </div>
+
+    {% endif %}
+
+    <div class="footer">
+        Smart Real Estate Analytics Platform
+    </div>
+
+</div>
+
+<script>
+
+document.querySelector("form").addEventListener("submit", function () {
+    document.getElementById("loader").style.display = "block";
+    document.getElementById("predictBtn").innerHTML = "Calculating...";
+});
+
+</script>
+
+{% if prediction %}
+<script>
+
+const predictedPrice =
+parseFloat("{{ prediction }}".replace(/,/g,'').replace(/[^\d.]/g,''));
+
+new Chart(
+document.getElementById('priceChart'),
+{
+    type: 'bar',
+    data: {
+        labels: ['Minimum', 'Average', 'Predicted', 'Maximum'],
+        datasets: [{
+            label: 'Property Value',
+            data: [
+                predictedPrice * 0.6,
+                predictedPrice * 0.85,
+                predictedPrice,
+                predictedPrice * 1.3
+            ]
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            legend: {
+                display: false
+            }
+        }
+    }
+});
+
+</script>
+{% endif %}
+
+</body>
+</html>
