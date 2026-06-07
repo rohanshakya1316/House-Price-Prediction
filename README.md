@@ -312,7 +312,6 @@ The system processes the information and predicts the estimated property price.
 
 **Rohan Shakya**
 
-Software Developer | Machine Learning Enthusiast
 
 ---
 
